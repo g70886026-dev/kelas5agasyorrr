@@ -1,0 +1,1036 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Class 5A — CRiTT'X CORE</title>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    user-select: none;
+}
+
+body {
+    background: #030305;
+    color: white;
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+}
+
+/* Background Canvas Partikel */
+#bgCanvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: -2;
+    pointer-events: none;
+}
+
+body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background: radial-gradient(
+        circle at 50% 30%,
+        rgba(35, 35, 55, 0.4) 0%,
+        rgba(15, 15, 25, 0.7) 45%,
+        #030305 85%
+    );
+    z-index: -1;
+}
+
+/* Glassmorphism Standard */
+.glass-panel {
+    background: rgba(18, 18, 24, 0.65);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6),
+                inset 0 1px 0 rgba(255, 255, 255, 0.15);
+}
+
+/* SEKSI PAGE CONTROL WITH TRANSITION */
+.page-section {
+    display: none;
+    width: 100%;
+    opacity: 0;
+    transform: translateY(25px) scale(0.98);
+    transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1), transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.page-section.active {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    opacity: 1;
+    transform: translateY(0) scale(1);
+}
+
+/* ROBOT ANIMATION & MOUSE FOLLOW EYES */
+.robot-container {
+    width: 100%;
+    height: 340px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+}
+
+.robot {
+    position: relative;
+    width: 300px;
+    height: 250px;
+    animation: robotFloat 4.5s ease-in-out infinite;
+}
+
+.robot-head {
+    width: 290px;
+    height: 215px;
+    background: linear-gradient(145deg, #22222c, #0a0a0f);
+    border: 2px solid rgba(255, 255, 255, 0.15);
+    border-radius: 60px;
+    position: relative;
+    box-shadow:
+        inset 0 0 25px #000,
+        0 0 35px rgba(0, 229, 255, 0.15);
+}
+
+.robot-head::before {
+    content: "";
+    position: absolute;
+    inset: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 50px;
+}
+
+.robot-ear {
+    position: absolute;
+    width: 26px;
+    height: 70px;
+    background: linear-gradient(180deg, #181822, #333344, #101018);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    top: 60px;
+    border-radius: 10px;
+}
+
+.robot-ear.left { left: -22px; }
+.robot-ear.right { right: -22px; }
+
+.robot-eyes {
+    display: flex;
+    justify-content: center;
+    gap: 32px;
+    position: absolute;
+    top: 75px;
+    width: 100%;
+}
+
+.robot-eye {
+    width: 78px;
+    height: 52px;
+    border-radius: 20px;
+    background: #050508;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+    box-shadow: inset 0 0 10px rgba(0,0,0,0.9);
+}
+
+.robot-pupil {
+    width: 38px;
+    height: 14px;
+    border-radius: 20px;
+    background: #00f2ff;
+    box-shadow: 0 0 15px #00f2ff, 0 0 30px #00f2ff;
+    transition: transform 0.08s ease-out;
+    animation: blink 4s infinite;
+}
+
+.robot-mouth {
+    position: absolute;
+    bottom: 38px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80px;
+    height: 18px;
+    background: repeating-linear-gradient(
+        90deg,
+        #00f2ff 0 6px,
+        #111 6px 12px
+    );
+    border: 2px solid #00f2ff;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 242, 255, 0.4);
+}
+
+.robot-light {
+    position: absolute;
+    top: -28px;
+    left: 50%;
+    width: 3px;
+    height: 28px;
+    background: #777;
+    transform: translateX(-50%);
+}
+
+.robot-light::before {
+    content: "";
+    position: absolute;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: #00f2ff;
+    top: -16px;
+    left: -9.5px;
+    box-shadow: 0 0 20px #00f2ff, 0 0 40px #00f2ff;
+    animation: pulseGlow 2s infinite alternate;
+}
+
+@keyframes robotFloat {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-12px); }
+}
+
+@keyframes blink {
+    0%, 47%, 49%, 100% { transform: scaleY(1); }
+    48% { transform: scaleY(0.1); }
+}
+
+@keyframes pulseGlow {
+    from { opacity: 0.7; box-shadow: 0 0 15px #00f2ff; }
+    to { opacity: 1; box-shadow: 0 0 35px #00f2ff, 0 0 50px #00f2ff; }
+}
+
+/* LOGIN FORM STYLES */
+.login-container {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    padding: 0 20px 40px;
+}
+
+.login-card {
+    width: 100%;
+    max-width: 640px;
+    border-radius: 40px;
+    padding: 45px 38px 38px;
+    text-align: center;
+    position: relative;
+}
+
+.logo-wrapper {
+    width: 155px;
+    height: 155px;
+    border: 2px solid rgba(255, 255, 255, 0.15);
+    border-radius: 50%;
+    margin: 0 auto 25px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 0 35px rgba(0, 242, 255, 0.1);
+    position: relative;
+}
+
+.logo {
+    width: 118px;
+    height: 118px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    background: #06060a;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 58px;
+    font-weight: 900;
+    color: white;
+    text-shadow: 0 0 20px rgba(255,255,255,0.8);
+}
+
+.logo-status {
+    position: absolute;
+    width: 18px;
+    height: 18px;
+    background: #00ffaa;
+    border-radius: 50%;
+    right: 8px;
+    bottom: 16px;
+    box-shadow: 0 0 15px #00ffaa;
+    border: 2px solid #06060a;
+}
+
+.welcome {
+    color: #888899;
+    font-size: 13px;
+    letter-spacing: 5px;
+    margin-bottom: 10px;
+    text-transform: uppercase;
+}
+
+.title {
+    font-size: clamp(26px, 5vw, 40px);
+    letter-spacing: 3px;
+    font-weight: 900;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+}
+
+.title span { color: #00f2ff; text-shadow: 0 0 15px rgba(0, 242, 255, 0.5); }
+
+.subtitle {
+    color: #aaaaaa;
+    font-size: 15px;
+    margin-bottom: 30px;
+}
+
+.form-group {
+    text-align: left;
+    margin-bottom: 22px;
+}
+
+.form-group label {
+    display: block;
+    color: #8888aa;
+    font-size: 11px;
+    letter-spacing: 3px;
+    margin-bottom: 10px;
+    font-weight: 700;
+}
+
+.input-box {
+    height: 65px;
+    border: 1.5px solid rgba(255, 255, 255, 0.15);
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    padding: 0 22px;
+    background: rgba(0, 0, 0, 0.4);
+    transition: .35s;
+}
+
+.input-box:focus-within {
+    border-color: #00f2ff;
+    box-shadow: 0 0 25px rgba(0, 242, 255, 0.25);
+    background: rgba(0, 0, 0, 0.6);
+}
+
+.input-icon {
+    color: #8888aa;
+    font-size: 22px;
+    margin-right: 15px;
+}
+
+.input-box input {
+    width: 100%;
+    border: none;
+    outline: none;
+    background: transparent;
+    color: white;
+    font-size: 16px;
+}
+
+.input-box input::placeholder { color: #555566; }
+
+.sign-button {
+    width: 100%;
+    height: 65px;
+    margin-top: 15px;
+    background: linear-gradient(135deg, #ffffff, #d0d0dd);
+    border: none;
+    border-radius: 20px;
+    color: #050508;
+    font-size: 17px;
+    font-weight: 800;
+    letter-spacing: 4px;
+    cursor: pointer;
+    transition: .35s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.sign-button:hover {
+    background: #00f2ff;
+    color: #000;
+    transform: translateY(-3px);
+    box-shadow: 0 0 35px rgba(0, 242, 255, 0.5);
+}
+
+.sign-button:active { transform: scale(0.97); }
+
+/* DASHBOARD MAIN STYLES */
+.main-container {
+    width: 100%;
+    max-width: 1100px;
+    padding: 35px 20px 0;
+}
+
+.kelas-card {
+    width: 100%;
+    border-radius: 40px;
+    padding: 40px 30px;
+    text-align: center;
+    margin-bottom: 35px;
+    position: relative;
+}
+
+.stats {
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-top: 25px;
+}
+
+.stat-box {
+    background: rgba(0, 0, 0, 0.4);
+    border: 1.5px solid rgba(255, 255, 255, 0.1);
+    border-radius: 18px;
+    padding: 12px 24px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    transition: .3s;
+}
+
+.stat-box:hover {
+    border-color: #00f2ff;
+    box-shadow: 0 0 20px rgba(0, 242, 255, 0.2);
+    transform: translateY(-3px);
+}
+
+.stat-box .label {
+    color: #777788;
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+}
+
+.stat-box .value {
+    font-size: 20px;
+    font-weight: 900;
+    color: #fff;
+}
+
+/* CARDS STRUCTURE GRID */
+.section-title {
+    color: #777799;
+    font-size: 13px;
+    letter-spacing: 5px;
+    margin-bottom: 22px;
+    text-align: center;
+    text-transform: uppercase;
+    font-weight: 700;
+}
+
+.struktur-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 18px;
+    margin-bottom: 35px;
+}
+
+.card {
+    border-radius: 24px;
+    padding: 26px 16px 22px;
+    text-align: center;
+    transition: .35s;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.card:hover {
+    border-color: #00f2ff;
+    box-shadow: 0 0 30px rgba(0, 242, 255, 0.25);
+    transform: translateY(-5px);
+}
+
+.card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background: linear-gradient(90deg, transparent, #00f2ff, transparent);
+}
+
+.card i {
+    font-size: 1.9rem;
+    margin-bottom: 12px;
+    width: 52px;
+    height: 52px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: rgba(0,0,0,0.5);
+    border: 1.5px solid rgba(255,255,255,0.15);
+    color: #fff;
+}
+
+.card .jabatan {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    font-weight: 700;
+    color: #777788;
+    margin-bottom: 6px;
+}
+
+.card .nama {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: #fff;
+}
+
+/* STUDENT BADGES */
+.student-list-section {
+    border-radius: 35px;
+    padding: 32px 24px;
+    margin-bottom: 35px;
+}
+
+.student-badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+}
+
+.badge {
+    background: rgba(0, 0, 0, 0.45);
+    padding: 8px 16px;
+    border-radius: 25px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: #ddd;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: .3s;
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+}
+
+.badge:hover {
+    border-color: #00f2ff;
+    color: #fff;
+    box-shadow: 0 0 15px rgba(0, 242, 255, 0.25);
+    transform: translateY(-2px);
+}
+
+/* CUSTOM SOSMED BUTTON GLOWS */
+.sosmed-footer {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    flex-wrap: wrap;
+    padding: 10px 0 25px;
+}
+
+.sosmed-link {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    text-decoration: none;
+    padding: 16px 30px;
+    border-radius: 50px;
+    font-weight: 800;
+    font-size: 0.95rem;
+    color: #fff;
+    letter-spacing: 2px;
+    transition: .35s;
+    text-transform: uppercase;
+    position: relative;
+}
+
+/* TikTok Specific Glow */
+.sosmed-link.tiktok {
+    background: rgba(15, 15, 20, 0.7);
+    border: 2px solid rgba(0, 242, 234, 0.4);
+}
+.sosmed-link.tiktok:hover {
+    border-color: #00f2ea;
+    box-shadow: 0 0 30px rgba(0, 242, 234, 0.6), -5px 0 15px rgba(255, 0, 80, 0.5);
+    transform: translateY(-4px);
+    background: #000;
+}
+
+/* Instagram Specific Glow */
+.sosmed-link.instagram {
+    background: rgba(15, 15, 20, 0.7);
+    border: 2px solid rgba(225, 48, 108, 0.4);
+}
+.sosmed-link.instagram:hover {
+    border-color: #e1306c;
+    box-shadow: 0 0 30px rgba(225, 48, 108, 0.6), 0 0 15px rgba(253, 29, 29, 0.4);
+    transform: translateY(-4px);
+    background: #000;
+}
+
+.logout-btn {
+    background: rgba(255, 50, 50, 0.12);
+    border: 1.5px solid rgba(255, 70, 70, 0.5);
+    color: #ff7777;
+    padding: 8px 20px;
+    border-radius: 25px;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 2px;
+    cursor: pointer;
+    transition: .3s;
+    margin-top: 15px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.logout-btn:hover {
+    background: #ff3333;
+    color: white;
+    box-shadow: 0 0 25px rgba(255, 51, 51, 0.5);
+    transform: translateY(-2px);
+}
+
+/* NOTIFICATION POPUP */
+.notification {
+    position: fixed;
+    top: 25px;
+    left: 50%;
+    transform: translate(-50%, -100px);
+    background: rgba(12, 12, 18, 0.95);
+    border: 1.5px solid #00f2ff;
+    box-shadow: 0 0 25px rgba(0, 242, 255, 0.4);
+    padding: 14px 28px;
+    border-radius: 20px;
+    color: white;
+    font-weight: 700;
+    transition: .4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    z-index: 9999;
+    backdrop-filter: blur(10px);
+}
+
+.notification.show {
+    transform: translate(-50%, 0);
+}
+
+.footer {
+    text-align: center;
+    padding: 20px 10px 35px;
+    color: #555566;
+    font-size: 12px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+}
+
+@media(max-width: 600px) {
+    .robot-container { height: 290px; }
+    .robot { transform: scale(0.78); margin-top: 0; }
+    .login-card { padding: 35px 20px 25px; border-radius: 30px; }
+    .title { font-size: 1.7rem; }
+    .input-box { height: 58px; }
+    .sign-button { height: 58px; font-size: 15px; }
+    .sosmed-link { padding: 12px 20px; font-size: 0.85rem; }
+}
+</style>
+</head>
+<body>
+
+    <!-- CANVAS PARTIKEL LATAR BELAKANG -->
+    <canvas id="bgCanvas"></canvas>
+
+    <!-- NOTIFICATION BOX -->
+    <div id="notification" class="notification">⚠️ Harap masukkan Username/Nama terlebih dahulu!</div>
+
+    <!-- ================= HALAMAN 1: LOGIN ================= -->
+    <div id="loginPage" class="page-section active">
+        <!-- ROBOT ANIMATION -->
+        <div class="robot-container">
+            <div class="robot">
+                <div class="robot-light"></div>
+                <div class="robot-ear left"></div>
+                <div class="robot-ear right"></div>
+                <div class="robot-head">
+                    <div class="robot-eyes">
+                        <div class="robot-eye"><div class="robot-pupil" id="leftPupil"></div></div>
+                        <div class="robot-eye"><div class="robot-pupil" id="rightPupil"></div></div>
+                    </div>
+                    <div class="robot-mouth"></div>
+                </div>
+                <div class="robot-neck"></div>
+            </div>
+        </div>
+
+        <!-- LOGIN CARD -->
+        <div class="login-container">
+            <div class="login-card glass-panel">
+                <div class="logo-wrapper">
+                    <div class="logo">5A</div>
+                    <div class="logo-status"></div>
+                </div>
+
+                <div class="welcome">Welcome To</div>
+                <div class="title">CRiTT'X <span>CORE</span></div>
+                <div class="subtitle">Masuk untuk mengakses portal media sosial kelas 5A</div>
+
+                <form onsubmit="handleLogin(event)">
+                    <div class="form-group">
+                        <label>USERNAME / NAMA LENGKAP</label>
+                        <div class="input-box">
+                            <span class="input-icon">👤</span>
+                            <input type="text" id="usernameInput" placeholder="Ketik nama Anda di sini..." autocomplete="off">
+                        </div>
+                    </div>
+
+                    <button type="submit" class="sign-button">
+                        SIGN IN <span>→</span>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= HALAMAN 2: DASHBOARD MEDIA SOSIAL ================= -->
+    <div id="dashboardPage" class="page-section">
+        <div class="main-container">
+            <!-- MAIN CLASS CARD -->
+            <div class="kelas-card glass-panel">
+                <div class="logo-wrapper" style="margin: 0 auto 20px; width: 130px; height: 130px;">
+                    <div class="logo" style="width: 98px; height: 98px; font-size: 44px;">5A</div>
+                    <div class="logo-status"></div>
+                </div>
+
+                <div class="welcome">Selamat Datang Kembali, <span id="displayName" style="color: #00f2ff; font-weight: bold; text-shadow: 0 0 10px rgba(0,242,255,0.4);">User</span> 👋</div>
+                <div class="title">Class <span>5A</span> Core</div>
+                <div class="subtitle" style="color: #aaa; margin-bottom: 15px;">Homeroom Teacher: <strong>Nugroho Sugihartono</strong></div>
+
+                <div class="stats">
+                    <div class="stat-box">
+                        <span style="font-size: 20px;">♂</span>
+                        <div>
+                            <div class="label">Male</div>
+                            <div class="value">15</div>
+                        </div>
+                    </div>
+                    <div class="stat-box">
+                        <span style="font-size: 20px;">♀</span>
+                        <div>
+                            <div class="label">Female</div>
+                            <div class="value">16</div>
+                        </div>
+                    </div>
+                    <div class="stat-box">
+                        <span style="font-size: 20px;">👥</span>
+                        <div>
+                            <div class="label">Total</div>
+                            <div class="value">31</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <button class="logout-btn" onclick="handleLogout()">
+                        🔒 LOGOUT / KELUAR
+                    </button>
+                </div>
+            </div>
+
+            <!-- CLASS STRUCTURE -->
+            <div class="section-title">— Class Structure —</div>
+            <div class="struktur-grid">
+                <div class="card glass-panel">
+                    <i>🎓</i>
+                    <div class="jabatan">Homeroom Teacher</div>
+                    <div class="nama">Nugroho Sugihartono</div>
+                </div>
+                <div class="card glass-panel">
+                    <i>👑</i>
+                    <div class="jabatan">Class President</div>
+                    <div class="nama">Yasmin Alveena Bintaro</div>
+                </div>
+                <div class="card glass-panel">
+                    <i>🎖️</i>
+                    <div class="jabatan">Vice President</div>
+                    <div class="nama">Muhammad Fadli Pratama</div>
+                </div>
+                <div class="card glass-panel">
+                    <i>💰</i>
+                    <div class="jabatan">Treasurer</div>
+                    <div class="nama">Salwa Mulyani</div>
+                </div>
+                <div class="card glass-panel">
+                    <i>🛡️</i>
+                    <div class="jabatan">Security</div>
+                    <div class="nama">Gian Aditya Permana</div>
+                </div>
+                <div class="card glass-panel">
+                    <i>🧹</i>
+                    <div class="jabatan">Sanitation</div>
+                    <div class="nama">Anugrah Putra</div>
+                </div>
+            </div>
+
+            <!-- STUDENT LIST -->
+            <div class="student-list-section glass-panel">
+                <h3 style="font-size: 1.15rem; font-weight: 800; text-align: center; margin-bottom: 22px; letter-spacing: 3px; text-transform: uppercase; color: #fff;">
+                    📋 Class 5A Student List
+                </h3>
+                <div class="student-badges">
+                    <span class="badge">♂ Fahri Maulana</span>
+                    <span class="badge">♂ Muhammad Fadli</span>
+                    <span class="badge">♂ Gian Aditya Permana</span>
+                    <span class="badge">♂ Mirza Naufal Almas</span>
+                    <span class="badge">♂ Muhammad Kholid Saipulloh</span>
+                    <span class="badge">♂ Abdul Rohim</span>
+                    <span class="badge">♂ Sanjaya</span>
+                    <span class="badge">♂ Anugrah Putra</span>
+                    <span class="badge">♂ Anjar Efendi</span>
+                    <span class="badge">♂ Alfarel Fikri Nurdafa</span>
+                    <span class="badge">♂ Brayen</span>
+                    <span class="badge">♂ Rizky 1</span>
+                    <span class="badge">♂ Rizky 2</span>
+                    <span class="badge">♂ Raya Rabbani</span>
+                    <span class="badge">♂ Muhammad Fadli Pratama</span>
+                    <span class="badge">♀ Khadijah</span>
+                    <span class="badge">♀ Shalwa Mulyani</span>
+                    <span class="badge">♀ Yasmin Alveena Bintaro</span>
+                    <span class="badge">♀ Albana Cantika Putri</span>
+                    <span class="badge">♀ Putri Rahmadhani</span>
+                    <span class="badge">♀ Asfiyana</span>
+                    <span class="badge">♀ Adibah Horunnisa</span>
+                    <span class="badge">♀ Fira Apriliani</span>
+                    <span class="badge">♀ Shevvira Putri Khaerudin</span>
+                    <span class="badge">♀ Risva Yanti Burhanudin</span>
+                    <span class="badge">♀ Nadira Putri Malik</span>
+                    <span class="badge">♀ Nandira Thfana</span>
+                    <span class="badge">♀ Aqila Fernanda Safitri</span>
+                    <span class="badge">♀ Kesya Septiana Putri</span>
+                    <span class="badge">♀ Mesya Febe Ranida</span>
+                    <span class="badge">♀ Nasya Khalisa</span>
+                </div>
+            </div>
+
+            <!-- OFFICIAL SOCIAL MEDIA BUTTONS -->
+            <div class="section-title">— Official Social Media —</div>
+            <div class="sosmed-footer">
+                <a href="https://www.tiktok.com/@s.5a.gacor?_r=1&_t=ZS-9B0m4c8Cjvb" 
+                   target="_blank" 
+                   rel="noopener noreferrer" 
+                   class="sosmed-link tiktok"
+                   onclick="playClickSound()">
+                    <i style="font-style: normal; font-size: 1.3rem;">🎵</i> TikTok 5A
+                </a>
+                <a href="https://www.instagram.com/class.5a.gacorrrr?rpxt=MWVhaXYwd3d0YXRkcQ==" 
+                   target="_blank" 
+                   rel="noopener noreferrer" 
+                   class="sosmed-link instagram"
+                   onclick="playClickSound()">
+                    <i style="font-style: normal; font-size: 1.3rem;">📸</i> Instagram 5A
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+    <div class="footer">
+        ♥ Class 5A — Solid, Gacor, United ♥
+    </div>
+
+    <script>
+        // WEB AUDIO SYNTHESIZER FOR CLICK SOUND EFFECTS
+        function playClickSound(freq = 600, duration = 0.08) {
+            try {
+                const AudioCtx = window.AudioContext || window.webkitAudioContext;
+                if (!AudioCtx) return;
+                const ctx = new AudioCtx();
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(freq, ctx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(1200, ctx.currentTime + duration);
+                
+                gain.gain.setValueAtTime(0.15, ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + duration);
+                
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                
+                osc.start();
+                osc.stop(ctx.currentTime + duration);
+            } catch(e) {}
+        }
+
+        // BACKGROUND PARTICLES CANVAS ANIMATION
+        const canvas = document.getElementById('bgCanvas');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        class Particle {
+            constructor() {
+                this.reset();
+            }
+            reset() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.size = Math.random() * 2 + 0.5;
+                this.speedX = (Math.random() - 0.5) * 0.4;
+                this.speedY = (Math.random() - 0.5) * 0.4;
+                this.alpha = Math.random() * 0.6 + 0.2;
+            }
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
+                if (this.x < 0 || this.x > canvas.width || this.y < 0 || this.y > canvas.height) {
+                    this.reset();
+                }
+            }
+            draw() {
+                ctx.fillStyle = `rgba(0, 242, 255, ${this.alpha})`;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        for (let i = 0; i < 55; i++) {
+            particles.push(new Particle());
+        }
+
+        function animateParticles() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particles.forEach(p => {
+                p.update();
+                p.draw();
+            });
+            requestAnimationFrame(animateParticles);
+        }
+        animateParticles();
+
+        // MOUSE FOLLOW EYE MOVEMENT FOR ROBOT
+        const leftPupil = document.getElementById('leftPupil');
+        const rightPupil = document.getElementById('rightPupil');
+
+        document.addEventListener('mousemove', (e) => {
+            const eyesContainer = document.querySelector('.robot-eyes');
+            if (!eyesContainer) return;
+            
+            const rect = eyesContainer.getBoundingClientRect();
+            const eyesCenterX = rect.left + rect.width / 2;
+            const eyesCenterY = rect.top + rect.height / 2;
+            
+            const deltaX = e.clientX - eyesCenterX;
+            const deltaY = e.clientY - eyesCenterY;
+            
+            const distance = Math.min(Math.hypot(deltaX, deltaY), 15);
+            const angle = Math.atan2(deltaY, deltaX);
+            
+            const moveX = Math.cos(angle) * distance * 0.8;
+            const moveY = Math.sin(angle) * distance * 0.5;
+            
+            if (leftPupil && rightPupil) {
+                leftPupil.style.transform = `translate(${moveX}px, ${moveY}px)`;
+                rightPupil.style.transform = `translate(${moveX}px, ${moveY}px)`;
+            }
+        });
+
+        // NOTIFICATION POPUP CONTROL
+        function showNotification(message) {
+            const notif = document.getElementById('notification');
+            notif.innerText = message;
+            notif.classList.add('show');
+            setTimeout(() => {
+                notif.classList.remove('show');
+            }, 3200);
+        }
+
+        // HANDLE LOGIN & REMEMBER USER VIA LOCALSTORAGE
+        function handleLogin(e) {
+            if(e) e.preventDefault();
+            playClickSound(800, 0.12);
+            
+            const usernameInput = document.getElementById('usernameInput');
+            const username = usernameInput.value.trim();
+
+            if (username === "") {
+                showNotification("⚠️ Harap masukkan Username / Nama Anda terlebih dahulu!");
+                return;
+            }
+
+            // Save session to LocalStorage
+            localStorage.setItem('crittx_user', username);
+            document.getElementById('displayName').innerText = username;
+
+            // Smooth page transition
+            const loginPage = document.getElementById('loginPage');
+            const dashboardPage = document.getElementById('dashboardPage');
+
+            loginPage.style.opacity = '0';
+            loginPage.style.transform = 'translateY(-20px) scale(0.95)';
+
+            setTimeout(() => {
+                loginPage.classList.remove('active');
+                dashboardPage.classList.add('active');
+                showNotification("✨ Login Berhasil! Selamat datang, " + username);
+            }, 450);
+        }
+
+        // HANDLE LOGOUT WITH CONFIRMATION
+        function handleLogout() {
+            playClickSound(400, 0.1);
+            if(confirm("Apakah Anda yakin ingin keluar?")) {
+                localStorage.removeItem('crittx_user');
+                
+                const loginPage = document.getElementById('loginPage');
+                const dashboardPage = document.getElementById('dashboardPage');
+
+                dashboardPage.style.opacity = '0';
+                dashboardPage.style.transform = 'translateY(20px) scale(0.95)';
+
+                setTimeout(() => {
+                    dashboardPage.classList.remove('active');
+                    loginPage.classList.add('active');
+                    document.getElementById('usernameInput').value = '';
+                    loginPage.style.opacity = '1';
+                    loginPage.style.transform = 'translateY(0) scale(1)';
+                    showNotification("🔒 Anda telah berhasil keluar dari sistem.");
+                }, 450);
+            }
+        }
+
+        // AUTO LOGIN CHECK ON PAGE LOAD
+        window.addEventListener('DOMContentLoaded', () => {
+            const savedUser = localStorage.getItem('crittx_user');
+            if (savedUser) {
+                document.getElementById('displayName').innerText = savedUser;
+                document.getElementById('loginPage').classList.remove('active');
+                document.getElementById('dashboardPage').classList.add('active');
+            }
+        });
+    </script>
+</body>
+</html>
